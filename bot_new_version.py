@@ -76,7 +76,8 @@ def accepter_cookies_independance(driver):
 # Remplir les champs du formulaire pour chaque site
 def remplir_champs_credit_mutuel(driver, numero):
     try:
-        phone_field = driver.find_element(By.ID, "phone")
+        # Attente explicite pour s'assurer que l'élément est visible avant d'interagir
+        phone_field = WebDriverWait(driver, 10).until(EC.visibility_of_element_located((By.ID, "phone")))
         phone_field.clear()
         type_slowly(phone_field, numero)
         print("✅ Numéro de téléphone renseigné sur Crédit Mutuel.")
