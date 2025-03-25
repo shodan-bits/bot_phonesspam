@@ -7,6 +7,17 @@ from selenium.webdriver.support import expected_conditions as EC
 from selenium.common.exceptions import NoSuchElementException, StaleElementReferenceException
 from datetime import datetime
 
+# Fonction pour faire défiler la page jusqu'en bas
+def scroll_to_bottom(driver):
+    driver.execute_script("window.scrollTo(0, document.body.scrollHeight);")
+    time.sleep(2)
+
+# Fonction pour remplir un champ en simulant une saisie lente
+def type_slowly(element, text):
+    for char in text:
+        element.send_keys(char)
+        time.sleep(0.1)
+
 # Initialisation du driver en mode navigation privée
 def init_driver():
     options = uc.ChromeOptions()
@@ -18,117 +29,128 @@ def init_driver():
 def attendre_element(driver, by, valeur, timeout=10):
     return WebDriverWait(driver, timeout).until(EC.presence_of_element_located((by, valeur)))
 
-# Accepter les cookies
-def accepter_cookies(driver):
+# Accepter les cookies sur chaque site
+def accepter_cookies_credit_mutuel(driver):
     try:
-        bouton_cookies = attendre_element(driver, By.XPATH, '//a[contains(@class, "ei_btn_typ_validate") and @data-type="accept"]')
-        bouton_cookies.click()
-        print("🍪 Cookies acceptés !")
+        accept_cookies = driver.find_element(By.ID, "popin_tc_privacy_button_3")
+        accept_cookies.click()
+        scroll_to_bottom(driver)
+        print("🍪 Cookies acceptés sur Crédit Mutuel.")
     except:
-        print("✅ Aucune bannière de cookies détectée.")
+        print("✅ Aucune bannière de cookies détectée sur Crédit Mutuel.")
 
-# Faire défiler jusqu'à un élément
-def scroll_jusqu_a_element(driver, element):
-    driver.execute_script("arguments[0].scrollIntoView({behavior: 'smooth', block: 'center'});", element)
-    time.sleep(1)
-
-# Imiter l'écriture humaine lettre par lettre
-def taper_texte(element, texte):
-    for char in texte:
-        element.send_keys(char)
-        time.sleep(0.1)  # Pause entre chaque lettre
-
-# Sélectionner une option (ex: téléphonie)
-def cocher_telephonie(driver):
+def accepter_cookies_bouygues(driver):
     try:
-        label_telephonie = attendre_element(driver, By.ID, "mainBlock.R_2.R3:lbl")
-        scroll_jusqu_a_element(driver, label_telephonie)
-        label_telephonie.click()
-        print("✅ Option 'LA TELEPHONIE' cochée")
+        accept_cookies = driver.find_element(By.ID, "popin_tc_privacy_button_3")
+        accept_cookies.click()
+        scroll_to_bottom(driver)
+        print("🍪 Cookies acceptés sur Bouygues Telecom.")
     except:
-        print("❌ Option 'LA TELEPHONIE' non trouvée")
+        print("✅ Aucune bannière de cookies détectée sur Bouygues Telecom.")
 
-# Sélectionner l'heure de rappel
-def choisir_heure_proche(driver):
+def accepter_cookies_cic(driver):
     try:
-        heure_actuelle = datetime.now().hour
-        select_heure = attendre_element(driver, By.ID, "mainBlock.dpdownHeure:DataEntry")
-        scroll_jusqu_a_element(driver, select_heure)
-        options = select_heure.find_elements(By.TAG_NAME, "option")
-        for option in options:
-            heure_range = option.get_attribute("value").split('|')
-            if int(heure_range[0]) >= heure_actuelle:
-                option.click()
-                print(f"⏰ Heure sélectionnée : {option.text}")
-                return
+        accept_cookies = driver.find_element(By.CLASS_NAME, "ei_btn ei_btn_typ_validate")
+        accept_cookies.click()
+        scroll_to_bottom(driver)
+        print("🍪 Cookies acceptés sur CIC.")
     except:
-        print("❌ Impossible de sélectionner l'heure")
+        print("✅ Aucune bannière de cookies détectée sur CIC.")
 
-# Remplir les champs du formulaire
-def remplir_champs(driver, numero, nom, prenom, email, code_postal):
-    champs = {
-        "telephone": "mainBlock.telephone",
-        "nom": "mainBlock.nom",
-        "prenom": "mainBlock.prenom",
-        "email": "mainBlock.email",
-        "code_postal": "mainBlock.codepostal"
-    }
-    
-    valeurs = {"telephone": numero, "nom": nom, "prenom": prenom, "email": email, "code_postal": code_postal}
-    
-    for champ, id in champs.items():
-        for _ in range(3):  # Essayer 3 fois si erreur stale element
-            try:
-                input_field = attendre_element(driver, By.ID, id)
-                scroll_jusqu_a_element(driver, input_field)
-                input_field.clear()
-                
-                if champ == "telephone":
-                    taper_texte(input_field, valeurs[champ])
-                else:
-                    input_field.send_keys(valeurs[champ])
-                
-                print(f"✅ Champ {champ} rempli : {valeurs[champ]}")
-                break  # Sortir de la boucle si succès
-            except StaleElementReferenceException:
-                print(f"🔄 Retenter remplissage du champ {champ}...")
-
-# Sélectionner si le client est existant
-def selectionner_client(driver):
+def accepter_cookies_independance(driver):
     try:
-        client_non = attendre_element(driver, By.ID, "mainBlock.clientnon:DataEntry")
-        scroll_jusqu_a_element(driver, client_non)
-        client_non.click()
-        print("✅ Sélectionné comme nouveau client")
+        accept_cookies = driver.find_element(By.ID, "didomi-notice-agree-button")
+        accept_cookies.click()
+        scroll_to_bottom(driver)
+        print("🍪 Cookies acceptés sur Indépendance Royale.")
     except:
-        print("❌ Option client non trouvée")
+        print("✅ Aucune bannière de cookies détectée sur Indépendance Royale.")
 
-# Cliquer sur le bouton d'envoi
-def cliquer_bouton(driver):
+# Remplir les champs du formulaire pour chaque site
+def remplir_champs_credit_mutuel(driver, numero):
     try:
-        bouton = attendre_element(driver, By.XPATH, '//input[@type="image" and contains(@alt, "Valider")]')
-        scroll_jusqu_a_element(driver, bouton)
-        bouton.click()
-        time.sleep(8)
-        print("📞 Demande envoyée avec succès !")
-    except:
-        print("❌ Bouton non trouvé !")
+        phone_field = driver.find_element(By.ID, "phone")
+        phone_field.clear()
+        type_slowly(phone_field, numero)
+        print("✅ Numéro de téléphone renseigné sur Crédit Mutuel.")
+    except Exception as e:
+        print(f"❌ Erreur en remplissant le champ sur Crédit Mutuel : {e}")
 
-# Processus principal pour chaque site
+def remplir_champs_bouygues(driver, numero):
+    try:
+        phone_field = driver.find_element(By.ID, "phone")
+        phone_field.clear()
+        type_slowly(phone_field, numero)
+        print("✅ Numéro de téléphone renseigné sur Bouygues Telecom.")
+    except Exception as e:
+        print(f"❌ Erreur en remplissant le champ sur Bouygues Telecom : {e}")
+
+def remplir_champs_cic(driver, nom, prenom, email, code_postal):
+    try:
+        name_field = driver.find_element(By.ID, "mainBlock.nom")
+        name_field.clear()
+        type_slowly(name_field, nom)
+
+        prenom_field = driver.find_element(By.ID, "mainBlock.prenom")
+        prenom_field.clear()
+        type_slowly(prenom_field, prenom)
+
+        email_field = driver.find_element(By.ID, "mainBlock.email")
+        email_field.clear()
+        type_slowly(email_field, email)
+
+        code_postal_field = driver.find_element(By.ID, "mainBlock.codepostal")
+        code_postal_field.clear()
+        type_slowly(code_postal_field, code_postal)
+
+        print("✅ Formulaire CIC rempli avec succès.")
+    except Exception as e:
+        print(f"❌ Erreur en remplissant le formulaire sur CIC : {e}")
+
+def remplir_champs_independance(driver, numero, nom, prenom, code_postal):
+    try:
+        phone_field = driver.find_element(By.ID, "edit-telephone")
+        phone_field.clear()
+        type_slowly(phone_field, numero)
+
+        name_field = driver.find_element(By.ID, "edit-nom")
+        name_field.clear()
+        type_slowly(name_field, nom)
+
+        prenom_field = driver.find_element(By.ID, "edit-prenom")
+        prenom_field.clear()
+        type_slowly(prenom_field, prenom)
+
+        code_postal_field = driver.find_element(By.ID, "edit-code-postal")
+        code_postal_field.clear()
+        type_slowly(code_postal_field, code_postal)
+
+        print("✅ Formulaire Indépendance Royale rempli avec succès.")
+    except Exception as e:
+        print(f"❌ Erreur en remplissant le formulaire sur Indépendance Royale : {e}")
+
+# Processus pour remplir un site
 def process_site(driver, url, numero, nom, prenom, email, code_postal):
     driver.get(url)
     time.sleep(6)  # Chargement initial
-    accepter_cookies(driver)
-    cocher_telephonie(driver)
-    remplir_champs(driver, numero, nom, prenom, email, code_postal)
-    choisir_heure_proche(driver)
-    selectionner_client(driver)
-    cliquer_bouton(driver)
+
+    # Selon le site, on accepte les cookies et on remplit les champs spécifiques
+    if "creditmutuel" in url:
+        accepter_cookies_credit_mutuel(driver)
+        remplir_champs_credit_mutuel(driver, numero)
+    elif "bouygues" in url:
+        accepter_cookies_bouygues(driver)
+        remplir_champs_bouygues(driver, numero)
+    elif "cic" in url:
+        accepter_cookies_cic(driver)
+        remplir_champs_cic(driver, nom, prenom, email, code_postal)
+    elif "independance" in url:
+        accepter_cookies_independance(driver)
+        remplir_champs_independance(driver, numero, nom, prenom, code_postal)
 
 # Fonction principale
 def main():
     sites = [
-        #"https://www.garagebernard.fr/fr/rappel-gratuit#",
         "https://www.creditmutuel.fr/fr/contacts/etre-rappele-par-telephone.html",
         "https://www.bouyguestelecom.fr/rappelez-moi",
         "https://www.cic.fr/fr/contacts/etre-rappele-par-telephone.html",
