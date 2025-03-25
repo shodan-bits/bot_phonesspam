@@ -29,12 +29,18 @@ def init_driver():
 def attendre_element(driver, by, valeur, timeout=10):
     return WebDriverWait(driver, timeout).until(EC.presence_of_element_located((by, valeur)))
 
+# Attendre que l'élément soit cliquable avant d'agir
+def attendre_et_cliquer(driver, by, valeur, timeout=10):
+    element = WebDriverWait(driver, timeout).until(EC.element_to_be_clickable((by, valeur)))
+    element.click()
+    print(f"✅ Élément cliqué : {valeur}")
+
 # Accepter les cookies sur chaque site
 def accepter_cookies_credit_mutuel(driver):
     try:
         # Accepter les cookies de Crédit Mutuel en utilisant la balise fournie
         accept_cookies = driver.find_element(By.CLASS_NAME, "ei_btn.ei_btn_typ_validate")
-        accept_cookies.click()
+        attendre_et_cliquer(driver, By.CLASS_NAME, "ei_btn.ei_btn_typ_validate")
         print("🍪 Cookies acceptés sur Crédit Mutuel.")
         time.sleep(2)  # Attendre avant de continuer
     except Exception as e:
