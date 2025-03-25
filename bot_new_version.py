@@ -32,10 +32,11 @@ def attendre_element(driver, by, valeur, timeout=10):
 # Accepter les cookies sur chaque site
 def accepter_cookies_credit_mutuel(driver):
     try:
+        # Accepter les cookies de Crédit Mutuel
         accept_cookies = driver.find_element(By.ID, "popin_tc_privacy_button_3")
         accept_cookies.click()
-        scroll_to_bottom(driver)
         print("🍪 Cookies acceptés sur Crédit Mutuel.")
+        time.sleep(2)  # Attendre avant de continuer
     except:
         print("✅ Aucune bannière de cookies détectée sur Crédit Mutuel.")
 
@@ -170,6 +171,10 @@ def main():
                 process_site(driver, site, numero, nom, prenom, email, code_postal)
             except Exception as e:
                 print(f"⚠️ Erreur sur {site} : {e}")
+            
+            # Attendre quelques secondes avant de passer au prochain site
+            print("⏳ Attente de 10 secondes avant de changer de site...")
+            time.sleep(10)  # Attendre avant de changer de site
         
         driver.quit()
         print("🔄 Redémarrage dans 45 secondes...")
