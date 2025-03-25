@@ -24,25 +24,14 @@ def accepter_cookies(driver):
     except NoSuchElementException:
         print("✅ Aucune bannière de cookies détectée.")
 
-# Détection et tentative de résolution de CAPTCHA basé sur des images
-def detecter_captcha(driver):
+# Cocher la case "LA TELEPHONIE"
+def cocher_telephonie(driver):
     try:
-        captcha_frame = driver.find_element(By.XPATH, '//iframe[contains(@src, "recaptcha")]')
-        driver.switch_to.frame(captcha_frame)
-        captcha_image = driver.find_element(By.XPATH, '//img')
-        src = captcha_image.get_attribute("src")
-        
-        # Décoder l'image
-        image_data = base64.b64decode(src.split(',')[1])
-        image = Image.open(io.BytesIO(image_data))
-        text = pytesseract.image_to_string(image)
-        print(f"🔍 CAPTCHA détecté : {text}")
-        
-        driver.switch_to.default_content()
-        time.sleep(5)
-        return True
+        radio_button = driver.find_element(By.ID, "mainBlock.R_2.R3:DataEntry")
+        radio_button.click()
+        print("✅ Option 'LA TELEPHONIE' cochée")
     except NoSuchElementException:
-        return False
+        print("❌ Option 'LA TELEPHONIE' non trouvée")
 
 # Sélectionner l'heure de rappel la plus proche
 def choisir_heure_proche(driver):
@@ -93,7 +82,7 @@ def cliquer_bouton(driver):
     try:
         bouton = driver.find_element(By.XPATH, '//input[@type="image" and contains(@alt, "Valider")]')
         bouton.click()
-        time.sleep(2)
+        time.sleep(5)  # Augmentation du temps d'attente pour éviter un changement trop rapide de page
         print("📞 Demande envoyée avec succès !")
     except NoSuchElementException:
         print("❌ Bouton non trouvé !")
@@ -101,13 +90,9 @@ def cliquer_bouton(driver):
 # Processus principal pour chaque site
 def process_site(driver, url, numero, nom, prenom, email, code_postal):
     driver.get(url)
-    time.sleep(3)
+    time.sleep(5)  # Augmentation du temps de chargement avant toute action
     accepter_cookies(driver)
-    
-    if detecter_captcha(driver):
-        print("⏳ Attente validation du CAPTCHA...")
-        time.sleep(5)
-    
+    cocher_telephonie(driver)
     remplir_champs(driver, numero, nom, prenom, email, code_postal)
     choisir_heure_proche(driver)
     selectionner_client(driver)
