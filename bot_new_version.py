@@ -2,10 +2,6 @@ import time
 import undetected_chromedriver as uc
 from selenium.webdriver.common.by import By
 from selenium.common.exceptions import NoSuchElementException
-import pytesseract
-from PIL import Image
-import io
-import base64
 from datetime import datetime
 
 # Initialisation du driver en mode navigation privée
@@ -24,30 +20,40 @@ def accepter_cookies(driver):
     except NoSuchElementException:
         print("✅ Aucune bannière de cookies détectée.")
 
+# Faire défiler la page jusqu'à un élément donné
+def scroll_jusqu_a_element(driver, element):
+    driver.execute_script("arguments[0].scrollIntoView({behavior: 'smooth', block: 'center'});", element)
+    time.sleep(1)  # Pause pour éviter tout problème de chargement
+
 # Cocher la case "LA TELEPHONIE"
 def cocher_telephonie(driver):
     try:
-        radio_button = driver.find_element(By.ID, "mainBlock.R_2.R3:DataEntry")
-        radio_button.click()
+        label_telephonie = driver.find_element(By.ID, "mainBlock.R_2.R3:lbl")
+        scroll_jusqu_a_element(driver, label_telephonie)
+        label_telephonie.click()  # Cliquer sur le label pour cocher l'option
         print("✅ Option 'LA TELEPHONIE' cochée")
     except NoSuchElementException:
         print("❌ Option 'LA TELEPHONIE' non trouvée")
 
-# Sélectionner l'heure de rappel la plus proche
+# Sélectionner l'heure la plus proche
 def choisir_heure_proche(driver):
     try:
         heure_actuelle = datetime.now().hour
-        options = driver.find_elements(By.XPATH, '//select[@id="mainBlock.dpdownHeure:DataEntry"]/option')
+        select_heure = driver.find_element(By.ID, "mainBlock.dpdownHeure:DataEntry")
+        scroll_jusqu_a_element(driver, select_heure)
+        
+        options = select_heure.find_elements(By.TAG_NAME, "option")
         for option in options:
             heure_range = option.get_attribute("value").split('|')
             if int(heure_range[0]) >= heure_actuelle:
                 option.click()
                 print(f"⏰ Heure de rappel sélectionnée : {option.text}")
                 return
+        print("⚠️ Aucune heure valide trouvée.")
     except NoSuchElementException:
         print("❌ Impossible de sélectionner l'heure de rappel.")
 
-# Remplir les champs du formulaire
+# Remplir les champs du formulaire avec un scroll + écriture lettre par lettre
 def remplir_champs(driver, numero, nom, prenom, email, code_postal):
     champs = {
         "telephone": "mainBlock.telephone",
@@ -62,9 +68,19 @@ def remplir_champs(driver, numero, nom, prenom, email, code_postal):
     for champ, id in champs.items():
         try:
             input_field = driver.find_element(By.ID, id)
+            scroll_jusqu_a_element(driver, input_field)  # Scroll avant de taper
+            
             input_field.clear()
-            input_field.send_keys(valeurs[champ])
-            print(f"✅ Champ {champ} rempli : {valeurs[champ]}")
+            
+            # Remplissage du champ téléphone avec délai (imite l'écriture humaine)
+            if champ == "telephone":
+                for char in valeurs[champ]:
+                    input_field.send_keys(char)
+                    time.sleep(0.1)
+                print(f"✅ Champ {champ} rempli : {valeurs[champ]}")
+            else:
+                input_field.send_keys(valeurs[champ])
+                print(f"✅ Champ {champ} rempli : {valeurs[champ]}")
         except NoSuchElementException:
             print(f"⚠️ Champ {champ} non trouvé")
 
@@ -72,6 +88,7 @@ def remplir_champs(driver, numero, nom, prenom, email, code_postal):
 def selectionner_client(driver):
     try:
         client_non = driver.find_element(By.ID, "mainBlock.clientnon:DataEntry")
+        scroll_jusqu_a_element(driver, client_non)
         client_non.click()
         print("✅ Sélectionné comme nouveau client")
     except NoSuchElementException:
@@ -81,8 +98,9 @@ def selectionner_client(driver):
 def cliquer_bouton(driver):
     try:
         bouton = driver.find_element(By.XPATH, '//input[@type="image" and contains(@alt, "Valider")]')
+        scroll_jusqu_a_element(driver, bouton)
         bouton.click()
-        time.sleep(5)  # Augmentation du temps d'attente pour éviter un changement trop rapide de page
+        time.sleep(8)  # Attente pour éviter un changement trop rapide de page
         print("📞 Demande envoyée avec succès !")
     except NoSuchElementException:
         print("❌ Bouton non trouvé !")
@@ -90,7 +108,7 @@ def cliquer_bouton(driver):
 # Processus principal pour chaque site
 def process_site(driver, url, numero, nom, prenom, email, code_postal):
     driver.get(url)
-    time.sleep(5)  # Augmentation du temps de chargement avant toute action
+    time.sleep(6)  # Temps de chargement avant toute action
     accepter_cookies(driver)
     cocher_telephonie(driver)
     remplir_champs(driver, numero, nom, prenom, email, code_postal)
