@@ -128,7 +128,7 @@ def process_site(driver, url, numero, nom, prenom, email, code_postal):
 # Fonction principale
 def main():
     sites = [
-        "https://www.garagebernard.fr/fr/rappel-gratuit#",
+        #"https://www.garagebernard.fr/fr/rappel-gratuit#",
         "https://www.creditmutuel.fr/fr/contacts/etre-rappele-par-telephone.html",
         "https://www.bouyguestelecom.fr/rappelez-moi",
         "https://www.cic.fr/fr/contacts/etre-rappele-par-telephone.html",
