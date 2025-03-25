@@ -32,13 +32,13 @@ def attendre_element(driver, by, valeur, timeout=10):
 # Accepter les cookies sur chaque site
 def accepter_cookies_credit_mutuel(driver):
     try:
-        # Accepter les cookies de Crédit Mutuel
-        accept_cookies = driver.find_element(By.ID, "popin_tc_privacy_button_3")
+        # Accepter les cookies de Crédit Mutuel en utilisant la balise fournie
+        accept_cookies = driver.find_element(By.CLASS_NAME, "ei_btn.ei_btn_typ_validate")
         accept_cookies.click()
         print("🍪 Cookies acceptés sur Crédit Mutuel.")
         time.sleep(2)  # Attendre avant de continuer
-    except:
-        print("✅ Aucune bannière de cookies détectée sur Crédit Mutuel.")
+    except Exception as e:
+        print(f"❌ Erreur en acceptant les cookies sur Crédit Mutuel : {e}")
 
 def accepter_cookies_bouygues(driver):
     try:
@@ -46,8 +46,8 @@ def accepter_cookies_bouygues(driver):
         accept_cookies.click()
         scroll_to_bottom(driver)
         print("🍪 Cookies acceptés sur Bouygues Telecom.")
-    except:
-        print("✅ Aucune bannière de cookies détectée sur Bouygues Telecom.")
+    except Exception as e:
+        print(f"❌ Erreur en acceptant les cookies sur Bouygues Telecom : {e}")
 
 def accepter_cookies_cic(driver):
     try:
@@ -55,8 +55,8 @@ def accepter_cookies_cic(driver):
         accept_cookies.click()
         scroll_to_bottom(driver)
         print("🍪 Cookies acceptés sur CIC.")
-    except:
-        print("✅ Aucune bannière de cookies détectée sur CIC.")
+    except Exception as e:
+        print(f"❌ Erreur en acceptant les cookies sur CIC : {e}")
 
 def accepter_cookies_independance(driver):
     try:
@@ -64,8 +64,8 @@ def accepter_cookies_independance(driver):
         accept_cookies.click()
         scroll_to_bottom(driver)
         print("🍪 Cookies acceptés sur Indépendance Royale.")
-    except:
-        print("✅ Aucune bannière de cookies détectée sur Indépendance Royale.")
+    except Exception as e:
+        print(f"❌ Erreur en acceptant les cookies sur Indépendance Royale : {e}")
 
 # Remplir les champs du formulaire pour chaque site
 def remplir_champs_credit_mutuel(driver, numero):
