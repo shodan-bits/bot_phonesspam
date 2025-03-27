@@ -65,16 +65,23 @@ def remplir_champs_independance(driver, numero, nom, prenom, code_postal):
         select_element.select_by_value("modif_rdv")
         print("🔄 Sélection de la valeur : modif_rdv")
 
+        driver.execute_script("window.scrollBy(0, 300);")  # Défiler de 300px vers le bas
+        time.sleep(2)
+
        # Sélection de case 1 
         checkbox = driver.find_element(By.ID, "edit-opt-in-offres") 
         if not checkbox.is_selected():
              checkbox.click()  
-       # Sélection de case 1 
+       # Sélection de case 2
         checkbox2 = driver.find_element(By.ID, "edit-opt-in-partenaires") 
         if not checkbox2.is_selected():
              checkbox2.click()
          
+       #Sélection bouton envoyer
+        btn_envoi = driver.find_element(By.CSS_SELECTOR, ".webform-button--submit.button.button--primary.js-form-submit.form-submit.relative")
+        btn_envoi.click()
 
+ 
         print("✅ Formulaire Indépendance Royale rempli avec succès.")
     except Exception as e:
         print(f"❌ Erreur en remplissant le formulaire sur Indépendance Royale : {e}")
