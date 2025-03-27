@@ -69,6 +69,10 @@ def remplir_champs_independance(driver, numero, nom, prenom, code_postal):
         checkbox = driver.find_element(By.ID, "edit-opt-in-offres") 
         if not checkbox.is_selected():
              checkbox.click()  
+       # Sélection de case 1 
+        checkbox2 = driver.find_element(By.ID, "edit-opt-in-partenaires") 
+        if not checkbox2.is_selected():
+             checkbox2.click()
          
 
         print("✅ Formulaire Indépendance Royale rempli avec succès.")
