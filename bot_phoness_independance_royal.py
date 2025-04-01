@@ -91,8 +91,6 @@ def remplir_champs_independance(driver, numero, nom, prenom, code_postal):
         print(f"❌ Erreur en remplissant le formulaire sur Indépendance Royale : {e}")
 
 
-
-
 # Processus pour remplir un site
 def process_site(driver, url, numero, nom, prenom, code_postal):
     driver.get(url)

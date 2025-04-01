@@ -49,14 +49,14 @@ def accepter_cookies_bouygues(driver):
 def remplir_champs_bouygues(driver, numero):
     try:
        
-        phone_field = driver.find_element(By.ID, "phone")
+        phone_field = driver.find_element(By.ID, "input is-default")
         phone_field.clear()
         type_slowly(phone_field, numero)
         print("✅ Numéro de téléphone renseigné sur Bouygues Telecom.")
         
         
-        rappeler_button = driver.find_element(By.XPATH, "//a[@class='is-primary button']")
-        attendre_et_cliquer(driver, By.XPATH, "//a[@class='is-primary button']")
+        rappeler_button = driver.find_element(By.XPATH, "//a[@class='button is-conversion']")
+        attendre_et_cliquer(driver, By.XPATH, "//a[@class=button is-conversion']")
         print("✅ Demande de rappel envoyée sur Bouygues Telecom.")
     except Exception as e:
         print(f"❌ Erreur en remplissant le formulaire sur Bouygues Telecom : {e}")
